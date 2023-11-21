@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Optionen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
+        <style>
+        
+        body{
+            font-family: sans-serif;
+        }
+
+        .button {
+            background-color: #ffffff;
+            color: rgb(22, 9, 139);
+            width: 12.5%;
+            height: 5%;
+            padding: 0% 0%;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 95%;
+            cursor: pointer;
+            border-radius: 16px;
+            border: 2px solid #080b99;
+            position: fixed;
+            left: 43.75%;
+            
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            }
+
+        .buttonBack{
+            top: 60%;
+        }
+
+        .buttonHoming{
+            top: 40%;
+        }
+
+        .buttonMotorsOff{     
+            top: 50%;    
+        }
+
+    </style>
+</head>
+<body>
+    <form method="post" action="/Optionen">
+        <input type="submit", class="button buttonBack", value="Zurück", name="btn"></input>
+        <input type="submit", class="button buttonHoming", value="Homing", name="btn", onclick="setAlertHoming()"></input>
+        <input type="submit", class="button buttonMotorsOff", value="Motoren stromlos", name="btn", onclick="setAlertOff()"></input>
+    </form>
+
+    <img src="{{url_for('static', filename='Logo_HHN.png')}}" alt="HHN-Logo" style="width: 15%; height: 15%; position:absolute ;top: 0px; right: 0px; margin-right: 1%; object-fit: contain;">
+    
+    <script>
+        function setAlertHoming(){
+            alert("Homing gestartet. Roboter geht in dem Stop-Modus, sobald das Homing fertig ist. Bitte auf 'Zurück' drücken.");
+        }
+
+        function setAlertOff(){
+            alert("Die Motoren sind nun stromlos. Der Roboter muss nun neu gehomed werden. Bitte vor weiterer Benutzung auf 'Homing' drücken.");
+        }
+    </script>
+</body>
+</html>

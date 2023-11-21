@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Mini-Parallel-Robot
+Exec=/usr/bin/python3 /home/pi/6RUSRobot/main.py quattro
+StartupNotify=false

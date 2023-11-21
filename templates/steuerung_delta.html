@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Steuerung</title>
+        <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
+        <style>
+        html, body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .button {
+            background-color: #ffffff;
+            color: rgb(22, 9, 139);
+            width: 12.5%;
+            height: 5%;
+            padding: 0% 0%;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 100%;
+            cursor: pointer;
+            border-radius: 16px;
+            border: 2px solid #080b99;
+            position: fixed;
+            left: 43.75%;
+            
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            }
+
+        .buttonDemo{top: 32.5%;
+            }
+
+        .buttonSteuerung{
+            background-color: #16098b;
+            color: #ffffff;
+            top: 42.5%;
+        }
+
+        .buttonOptionen{top: 62.5%;
+        }
+
+        .buttonStop{top: 52.5%;
+        }
+
+        #left {
+            position: absolute;
+            left: 15%;
+            top: 40%;
+            height: 20%;
+            width: 10%;
+            /*background: rgba(0, 255, 0, 0.1);*/
+        }
+
+        #right {
+            position: absolute;
+            right: 15%;
+            top: 40%;
+            height: 20%;
+            width: 10%;
+            /*background: rgba(0, 0, 255, 0.1);*/
+        }
+        
+        img {
+            -drag: none;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+         }
+
+        </style>
+    </head>
+    <body>
+        <form method="post" action="/">
+            <input type="submit", class="button buttonDemo", value="Demo Programme", name="btn"></input>
+            <input type="submit", class="button buttonSteuerung", value="Manuelle Steuerung", name="btn"></input>
+            <input type="submit", class="button buttonOptionen", value="Erweiterte Optionen", name="btn"></input>
+            <input type="submit", class="button buttonStop", value="Stop", name="btn"></input>
+        </form>
+
+        <img src="{{url_for('static', filename='Logo_HHN.png')}}" alt="HHN-Logo" style="width: 15%; height: 15%; position:absolute ;top: 0px; right: 0px; margin-right: 1%; object-fit: contain;">
+
+        <div id="left"></div>
+        <div id="right"></div>
+        <script src="{{url_for('static', filename='/dist/nipplejs.js')}}"></script>
+        <script>
+
+            /*const zeroInter = setInterval(sendZero, 250); // Send every 0.25 second zero
+
+            function sendZero(){
+                
+                var entry = JSON.stringify({
+                    distance: 0,
+                    radian: 0
+                })
+
+                //console.log(entry)
+                fetch(jsLink + 'RJS', {
+                    method: "POST",
+                    body: entry
+                })
+
+                fetch(jsLink + 'RJS', {
+                    method: "POST",
+                    body: entry
+                })
+
+            } */
+
+            // !!! Important Link -> has to be changed on every device to the local IP!!!
+            jsLink = 'http://192.168.4.1:5000/Steuerung/inputs/';
+
+            var throttleLeft = 0;
+            var throttleRight = 0;
+            var numOfMod = 4; // Modulo Number for data reductions
+
+            // Define both Joysticks
+            var joystickL = nipplejs.create({
+                zone: document.getElementById('left'),
+                mode: 'static',
+                position: { left: '50%', top: '50%' },
+                color: 'green',
+                size: 200
+                
+            });
+            
+            var joystickR = nipplejs.create({
+                zone: document.getElementById('right'),
+                mode: 'static',
+                position: { left: '50%', top: '50%' },
+                color: 'red',
+                size: 200,
+                lockY: 1
+            });
+
+            // Send position data from left JS
+            joystickL.on('move', function (evt, nipple) {
+                var entry = JSON.stringify({
+                    distance: nipple.distance,
+                    radian: nipple.angle.radian
+                })
+                console.log(entry)
+                
+                if(throttleLeft % numOfMod == 0){
+                    console.log("done")
+                    fetch(jsLink + 'LJS', {
+                        method: "POST",
+                        body: entry
+                        //cache: "reload"
+                    })
+                }
+                throttleLeft = throttleLeft + 1;
+            });
+           
+            // Send 0 if left joystick is released
+            joystickL.on('end', function (evt, nipple) {
+                var entry = JSON.stringify({
+                    distance: 0,
+                    radian: 0
+                })
+                console.log(entry)
+                throttleLeft = 0;
+
+                for (let i = 0; i < 10; i++){
+                //console.log(entry)
+                fetch(jsLink + 'LJS', {
+                    method: "POST",
+                    body: entry
+                })
+                }
+            });
+            
+            // Send position data from right Joystick
+            joystickR.on('move', function (evt, nipple) {
+                var entry = JSON.stringify({
+                    distance: nipple.distance,
+                    radian: nipple.angle.radian
+                })
+                //console.log(entry)
+                if(throttleRight % numOfMod == 0){
+                    console.log("done")
+                    fetch(jsLink + 'RJS', {
+                        method: "POST",
+                        body: entry
+                        //cache: "reload"
+                    })
+                }
+                throttleRight = throttleRight + 1;
+            });
+
+            // Send 0 if right joystick is released
+            joystickR.on('end', function (evt, nipple) {
+                var entry = JSON.stringify({
+                    distance: 0,
+                    radian: 0
+                })
+
+                throttleRight = 0;
+                for (let i = 0; i < 10; i++){
+                //console.log(entry)
+                fetch(jsLink + 'RJS', {
+                    method: "POST",
+                    body: entry
+                })
+                }
+            });
+
+        </script>
+    </body>
+</html>
