@@ -1,0 +1,4 @@
+Über folgenden Link kann das Betriebssystem heruntergeladen werden. 
+Stand des Links ist vom 22.11.2023
+
+https://downloads.raspberrypi.com/raspios_armhf/images/raspios_armhf-2022-01-28/
